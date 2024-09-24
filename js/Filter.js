@@ -50,7 +50,6 @@ class Filter {
 
         for (let y = 0; y < canvas.height; y++) {
             for (let x = 0; x < canvas.width; x++) {
-
                 const index = (x + (y * canvas.width)) * 4;
                 const r = data[index];
                 const g = data[index + 1];
@@ -76,7 +75,6 @@ class Filter {
 
         for (let y = 0; y < canvas.height; y++) {
             for (let x = 0; x < canvas.width; x++) {
-
                 const index = (x + (y * canvas.width)) * 4;
                 const r = data[index];
                 const g = data[index + 1];
@@ -110,12 +108,11 @@ class Filter {
 
         for (let y = 1; y < canvas.height - 1; y++) {
             for (let x = 1; x < canvas.width - 1; x++) {
-
                 let magX = 0, magY = 0;
 
                 for (let ky = 0; ky < 3; ky++) {
                     for (let kx = 0; kx < 3; kx++) {
-                        const index = (((y + ky) * this.canvas.width) + (x + kx)) * 4; 
+                        const index = (((y + ky) * this.canvas.width) + (x + kx)) * 4;
                         const r = data[index];
                         const g = data[index + 1];
                         const b = data[index + 2];
@@ -153,31 +150,30 @@ class Filter {
                 let r = 0;
                 let g = 0;
                 let b = 0;
-                let indice = 0;
+                let index = 0;
                 let cont = 0;
                 for (let i = 0; i < 3; i++) {
                     for (let j = 0; j < 3; j++) {
-                        let nuevoIndiceX = x + i - Math.floor(3 / 2);
-                        let nuevoIndiceY = y + i - Math.floor(3 / 2);
+                        let nuevoindexX = x + i - Math.floor(3 / 2);
+                        let nuevoindexY = y + i - Math.floor(3 / 2);
 
-                        if (nuevoIndiceX >= 0 && nuevoIndiceX < this.canvas.width && nuevoIndiceY >= 0 && nuevoIndiceY < this.canvas.height) {
+                        if (nuevoindexX >= 0 && nuevoindexX < this.canvas.width && nuevoindexY >= 0 && nuevoindexY < this.canvas.height) {
                             cont++;
-                            indice = (nuevoIndiceX + (nuevoIndiceY * this.canvas.width)) * 4;
+                            index = (nuevoindexX + (nuevoindexY * this.canvas.width)) * 4;
 
                             let k = kernel[i][j];
 
-                            r += data[indice] * k;
-                            g += data[indice + 1] * k;
-                            b += data[indice + 2] * k;
+                            r += data[index] * k;
+                            g += data[index + 1] * k;
+                            b += data[index + 2] * k;
                         }
                     }
                 }
+                index = (x + (y * this.canvas.width)) * 4;
 
-                indice = (x + (y * this.canvas.width)) * 4;
-
-                data[indice] = r / cont;
-                data[indice + 1] = g / cont;
-                data[indice + 2] = b / cont;
+                data[index] = r / cont;
+                data[index + 1] = g / cont;
+                data[index + 2] = b / cont;
             }
         }
         this.ctx.putImageData(imageData, 0, 0);
@@ -190,7 +186,6 @@ class Filter {
 
         for (let y = 0; y < canvas.height; y++) {
             for (let x = 0; x < canvas.width; x++) {
-
                 const index = (x + (y * canvas.width)) * 4;
                 const r = data[index];
                 const g = data[index + 1];
@@ -204,10 +199,47 @@ class Filter {
                 data[index + 2] = gray + (b - gray) * saturationValue;
             }
         }
+        this.ctx.putImageData(imageData, 0, 0);
+    }
 
+    sharpening() {
+        let imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        let data = imageData.data;
+        let r = 0, g = 0, b = 0;
+
+        let kernel = [
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9],
+            [1 / 9, 1 / 9, 1 / 9]
+        ];
+
+
+        for (let y = 0; y < this.canvas.height; y++) {
+            for (let x = 0; x < this.canvas.width; x++) {
+                for (let ky = 0; ky < 3; ky++) {
+                    for (let kx = 0; kx < 3; kx++) {
+                        const index = (((y + ky) * this.canvas.width) + (x + kx)) * 4;
+                        r = data[index];
+                        g = data[index + 1];
+                        b = data[index + 2];
+
+                        r += data[index] * kernel[ky][kx];
+                        g += data[index + 1] * kernel[ky][kx];
+                        b += data[index + 2] * kernel[ky][kx];
+                    }
+                }
+                const index = (x + (y * canvas.width)) * 4;
+
+                data[index] = data[index] + (data[index] - r) * 2;
+                data[index + 1] = data[index + 1] + (data[index + 1] - g) * 2;
+                data[index + 2] = data[index + 2] + (data[index + 2] - b) * 2;
+            }
+        }
         this.ctx.putImageData(imageData, 0, 0);
     }
 }
+
+
 
 
 

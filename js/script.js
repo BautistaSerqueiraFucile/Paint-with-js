@@ -127,6 +127,9 @@ function main() {
             case 'blur':
                 filter.blur();
             break;
+            case 'sharpening':
+                filter.sharpening();
+            break;
         }
     })
 
